@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-const BASE_URL =`${import.meta.env.VITE_BASE_URL}`;
+import Status from "../components/Status";
+const BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
 
 const Home = () => {
   const [name, setName] = useState("");
@@ -51,14 +52,11 @@ const Home = () => {
       })
       .then((res) => {
         setSuccess(res.data.message);
-        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
+        setError(err.response.data.message);
       });
-    console.log(name);
-    console.log(serialNumbers);
-    console.log(modelNumbers);
     setName("");
     setSerialNumbers([""]);
     setModelNumbers(["LG42"]);
@@ -69,22 +67,11 @@ const Home = () => {
       <h1 className="font-bold text-[#222328] text-[32px] mb-4">
         Add Compressors -
       </h1>
-      {error && (
-        <p
-          className="mb-2 font-medium text-[20px] text-red-500 bg-slate-300 
-      rounded-md p-1 text-center border border-slate-200"
-        >
-          {error}
-        </p>
-      )}
-      {success && (
-        <p
-          className="mb-2 font-bold text-[20px] text-green-500 bg-white
-        rounded-md p-1 text-center border border-slate-200"
-        >
-          {success}
-        </p>
-      )}
+
+      {error && <Status msg={error} color_text="text-red-500" />}
+
+      {success && <Status msg={success} color_text="text-green-500" />}
+
       <form onSubmit={handleSubmit} className="max-w-3xl flex flex-col gap-3">
         <div className="flex gap-4 flex-row items-center justify-start">
           <label className="block text-sm font-medium text-gray-900">
@@ -112,6 +99,8 @@ const Home = () => {
             <input
               type="text"
               value={serialNumber}
+              inputMode="numeric"
+              pattern="[0-9]*"
               onChange={(e) => handleSerialNumberChange(e, index)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
               rounded-lg outline-none block w-1/2
@@ -142,14 +131,6 @@ const Home = () => {
           </div>
         ))}
         <div className="flex flex-row gap-6 my-2">
-          {/* <button
-            type="button"
-            onClick={handleAddSerialNumber}
-            className=" text-indigo-600 bg-white font-medium rounded-md
-          text-sm  sm:w-auto px-5 py-2.5 text-center border border-gray-300"
-          >
-            Add more
-          </button> */}
           <button
             type="submit"
             className="text-white bg-[#6469ff] font-medium rounded-md
