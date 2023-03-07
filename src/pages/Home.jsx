@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Status from "../components/Status";
+import Loader from "../components/Loader";
 const BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
 
 const Home = () => {
@@ -9,6 +10,7 @@ const Home = () => {
   const [modelNumbers, setModelNumbers] = useState(["LG42"]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleNameChange = (e) => {
     setError("");
@@ -44,6 +46,7 @@ const Home = () => {
       setError("Enter fields correctly");
       return;
     }
+    setLoading(true);
     await axios
       .post(`${BASE_URL}/api/products`, {
         name,
@@ -56,7 +59,9 @@ const Home = () => {
       .catch((err) => {
         console.log(err);
         setError(err.response.data.message);
+        setLoading(false);
       });
+      setLoading(false);
     setName("");
     setSerialNumbers([""]);
     setModelNumbers(["LG42"]);
@@ -101,6 +106,7 @@ const Home = () => {
               value={serialNumber}
               inputMode="numeric"
               pattern="[0-9]*"
+              autocomplete="off"
               onChange={(e) => handleSerialNumberChange(e, index)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
               rounded-lg outline-none block w-1/2
@@ -134,8 +140,16 @@ const Home = () => {
           <button
             type="submit"
             className="text-white bg-[#6469ff] font-medium rounded-md
-          text-sm sm:w-auto px-5 py-2.5 text-center"
+          text-sm sm:w-auto px-5 py-2.5 text-center relative"
           >
+            {loading && (
+              <div
+                className="flex justify-center items-center inset-0 z-0
+              bg-[rgba(0,0,0,0.5)] absolute"
+              >
+                <Loader />
+              </div>
+            )}
             Submit
           </button>
         </div>

@@ -107,6 +107,7 @@ const FindNum = () => {
             inputMode="numeric"
             pattern="[0-9]*"
             onChange={handleChange}
+            autocomplete="off"
             className="bg-gray-50 border border-gray-300 text-gray-900 
           text-md rounded-lg outline-none block w-2/3
           focus:ring-[#4649ff]
