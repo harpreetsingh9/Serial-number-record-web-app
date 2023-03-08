@@ -3,9 +3,18 @@ import axios from "axios";
 import Status from "../components/Status";
 import Loader from "../components/Loader";
 const BASE_URL = `${import.meta.env.VITE_BASE_URL}`;
+import moment from "moment";
+import "moment-timezone";
 
 const Home = () => {
+  const formattedDateHtml = (mongoDate) => {
+    return moment.utc(mongoDate).tz("Asia/Kolkata").format("YYYY-MM-DD");
+  };
+  const formattedDate = (mongoDate) => {
+    return moment.utc(mongoDate).tz("Asia/Kolkata").format("DD-MM-YYYY");
+  };
   const [name, setName] = useState("");
+  const [selectedDate, setSelectedDate] = useState(formattedDateHtml(Date.now()));
   const [serialNumbers, setSerialNumbers] = useState([""]);
   const [modelNumbers, setModelNumbers] = useState(["LG42"]);
   const [error, setError] = useState("");
@@ -16,6 +25,12 @@ const Home = () => {
     setError("");
     setSuccess("");
     setName(e.target.value);
+  };
+
+  const handleDateChange = (e) => {
+    setError("");
+    setSuccess("");
+    setSelectedDate(e.target.value);
   };
 
   const handleSerialNumberChange = (e, index) => {
@@ -47,11 +62,15 @@ const Home = () => {
       return;
     }
     setLoading(true);
+    console.log(selectedDate);
+    const date = formattedDate(selectedDate);
+    console.log(date);
     await axios
       .post(`${BASE_URL}/api/products`, {
         name,
         serialNumbers,
         modelNumbers,
+        date,
       })
       .then((res) => {
         setSuccess(res.data.message);
@@ -61,10 +80,11 @@ const Home = () => {
         setError(err.response.data.message);
         setLoading(false);
       });
-      setLoading(false);
+    setLoading(false);
     setName("");
     setSerialNumbers([""]);
     setModelNumbers(["LG42"]);
+    setSelectedDate(formattedDateHtml(Date.now()));
   };
 
   return (
@@ -74,7 +94,6 @@ const Home = () => {
       </h1>
 
       {error && <Status msg={error} color_text="text-red-500" />}
-
       {success && <Status msg={success} color_text="text-green-500" />}
 
       <form onSubmit={handleSubmit} className="max-w-3xl flex flex-col gap-3">
@@ -86,6 +105,21 @@ const Home = () => {
             type="text"
             value={name}
             onChange={handleNameChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 
+            text-sm rounded-lg outline-none block w-2/3
+            focus:ring-[#4649ff]
+          focus:border-[#4649ff]
+        p-3"
+          />
+        </div>
+        <div className="flex gap-4 flex-row items-center justify-start">
+          <label className="block text-sm font-medium text-gray-900">
+            Date:
+          </label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 
             text-sm rounded-lg outline-none block w-2/3
             focus:ring-[#4649ff]
@@ -106,7 +140,7 @@ const Home = () => {
               value={serialNumber}
               inputMode="numeric"
               pattern="[0-9]*"
-              autocomplete="off"
+              autoComplete="off"
               onChange={(e) => handleSerialNumberChange(e, index)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
               rounded-lg outline-none block w-1/2

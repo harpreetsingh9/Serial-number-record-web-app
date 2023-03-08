@@ -26,10 +26,15 @@ const FindNum = () => {
 
   const handleReplaceChange = (e) => {
     setNewSerialNumber(e.target.value);
+    setError("");
   };
   // http://localhost:5000
 
   const handleReplaceSubmit = async () => {
+    if (newSerialNumber.length == 0) {
+      setError("Enter new serial number correctly");
+      return;
+    }
     setLoadingReplace(true);
     try {
       const response = await axios.put(
@@ -107,7 +112,7 @@ const FindNum = () => {
             inputMode="numeric"
             pattern="[0-9]*"
             onChange={handleChange}
-            autocomplete="off"
+            autoComplete="off"
             className="bg-gray-50 border border-gray-300 text-gray-900 
           text-md rounded-lg outline-none block w-2/3
           focus:ring-[#4649ff]
@@ -151,13 +156,16 @@ const FindNum = () => {
       {products.length > 0 && (
         <div>
           <h3 className="my-2 text-[#6469ff] text-[16px] max-w[500px]">
-            Compressor Information - <span className="font-semibold text-[20px]">{searchSerialNumber}</span>
+            Compressor Information -{" "}
+            <span className="font-semibold text-[20px]">
+              {searchSerialNumber}
+            </span>
           </h3>
 
           <ul>
             {products.map((product) => (
               <li
-                key={product.compDetails[0]._id}
+                key={product._id}
                 className="py-2 font-medium text-[20px]"
               >
                 <Card
