@@ -7,14 +7,10 @@ import moment from "moment";
 import "moment-timezone";
 
 const Home = () => {
-  const formattedDateHtml = (mongoDate) => {
-    return moment.utc(mongoDate).tz("Asia/Kolkata").format("YYYY-MM-DD");
-  };
-  const formattedDate = (mongoDate) => {
-    return moment.utc(mongoDate).tz("Asia/Kolkata").format("DD-MM-YYYY");
-  };
   const [name, setName] = useState("");
-  const [selectedDate, setSelectedDate] = useState(formattedDateHtml(Date.now()));
+  const [selectedDate, setSelectedDate] = useState(
+    moment(new Date()).format("YYYY-MM-DD")
+  );
   const [serialNumbers, setSerialNumbers] = useState([""]);
   const [modelNumbers, setModelNumbers] = useState(["LG42"]);
   const [error, setError] = useState("");
@@ -26,11 +22,10 @@ const Home = () => {
     setSuccess("");
     setName(e.target.value);
   };
-
   const handleDateChange = (e) => {
     setError("");
     setSuccess("");
-    setSelectedDate(e.target.value);
+    setSelectedDate(moment(e.target.value).format("YYYY-MM-DD"));
   };
 
   const handleSerialNumberChange = (e, index) => {
@@ -57,14 +52,13 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const date = moment(selectedDate).toISOString();
+    console.log(date);
     if (!name) {
       setError("Enter fields correctly");
       return;
     }
     setLoading(true);
-    console.log(selectedDate);
-    const date = formattedDate(selectedDate);
-    console.log(date);
     await axios
       .post(`${BASE_URL}/api/products`, {
         name,
@@ -84,7 +78,7 @@ const Home = () => {
     setName("");
     setSerialNumbers([""]);
     setModelNumbers(["LG42"]);
-    setSelectedDate(formattedDateHtml(Date.now()));
+    setSelectedDate(moment(new Date()).format("YYYY-MM-DD"));
   };
 
   return (
